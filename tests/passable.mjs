@@ -29,7 +29,7 @@ for (const w of worlds) {
         let ok = false, falls = 0, catches0 = await ev(() => window.__qa.state().catches || 0), lastZ = 0;
         while (Date.now() - t0 < 45000) {
             await sleep(400);
-            const s = await ev(() => { const q = window.__qa, st = q.state(); if (q.P.down) q.actions.giveUp && q.actions.giveUp(); return { pads: st.pads, z: st.z, stage: st.stage, y: st.y }; });
+            const s = await ev(() => { const q = window.__qa, st = q.state(); q.close(); if (q.P.down) q.actions.giveUp && q.actions.giveUp(); return { pads: st.pads, z: st.z, stage: st.stage, y: st.y }; });
             if (s.pads > pads0) { ok = true; break; }
             if (s.z > lastZ + 30 && lastZ) falls++;
             lastZ = s.z;

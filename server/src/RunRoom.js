@@ -386,13 +386,23 @@ export class RunRoom extends Room {
         let v = runSpeed(p, p.speed, p.world) * shadeRel(k, p);
         // where you hop from platform to platform, or ride the trampolines, nobody runs flat out: it comes at a hopper's pace
         if (type === 'stones' || type === 'bounce') v = Math.min(v, stageV(k) * 0.62);
-        s.shade = { k, at: now + CFG.shadeDelay * 1000, z0: wallZ(k) + 3, v, t0: now };
+        s.shade = { k, at: now + (k < 3 ? CFG.shadeDelayEarly : CFG.shadeDelay) * 1000, z0: wallZ(k) + 3, v, t0: now };
         pl.shK = k; pl.shAt = s.shade.at; pl.shZ = s.shade.z0; pl.shV = v;
     }
     clearShade(s) { s.shade = null; s.player.shK = 255; }
     caught(s, now) {
         const sh = s.shade, p = s.profile;
         if (!sh) return;
+        // a close call: the first time it reaches you in a stage it bounces off and comes again from well back (a catch is a
+        // stop, a prompt, the gate: new players were caught ten times a session, and left)
+        if (!sh.saved) {
+            const pl = s.player;
+            s.shade = { ...sh, at: now + 1600, z0: s.last.z + 28, saved: true };
+            pl.shAt = s.shade.at; pl.shZ = s.shade.z0; pl.shV = sh.v;
+            this.sendTo(s, 'saved', { k: sh.k });
+            this.dirty(s);
+            return;
+        }
         s.down = { at: now, k: sh.k, x: s.last.x, y: s.last.y, z: s.last.z, v: sh.v, t0: sh.t0 };
         this.clearShade(s);
         p.catches++; s.stats.caught++;
@@ -416,7 +426,7 @@ export class RunRoom extends Room {
         s.down = null;
         s.last = { x: d.x, y: d.y, z: d.z }; s.lastAt = now; s.homeAt = 0;
         // its Shade comes again, from well back
-        s.shade = { k: d.k, at: now + 2200, z0: d.z + 34, v: d.v, t0: d.t0 || now };
+        s.shade = { k: d.k, at: now + 2200, z0: d.z + 34, v: d.v, t0: d.t0 || now, saved: true };
         pl.shK = d.k; pl.shAt = s.shade.at; pl.shZ = s.shade.z0; pl.shV = d.v;
         this.sendTo(s, 'revived', { x: d.x, y: d.y, z: d.z });
         this.changed(s);

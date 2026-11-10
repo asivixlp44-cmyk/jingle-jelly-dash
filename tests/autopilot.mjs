@@ -30,8 +30,10 @@ try {
     {
         await sleep(1000);
         await qa(page, () => window.__qa.close());
+        // (the count runs in the page; it says when it has started, so the key isn't pressed before it's watching)
         const jumps = async () => page.evaluate(async () => {
             let n = 0, was = window.__qa.state().onGround, t0 = performance.now();
+            window.__jumpWatch = true;
             while (performance.now() - t0 < 3000) {
                 const g = window.__qa.state().onGround;
                 if (was && !g) n++;
@@ -41,10 +43,13 @@ try {
             return n;
         });
         const run = jumps();
+        await page.waitForFunction(() => window.__jumpWatch === true);
         await page.keyboard.press('Space');
         const one = await run;
         check(one === 1, 'one press of SPACE, one jump: ' + one + ' in 3 s');
+        await page.evaluate(() => { window.__jumpWatch = false; });
         const run2 = jumps();
+        await page.waitForFunction(() => window.__jumpWatch === true);
         await page.keyboard.down('Space'); await sleep(1500); await page.keyboard.up('Space');
         const held = await run2;
         check(held >= 2 && held <= 6, 'holding it keeps jumping, and it stops when let go: ' + held + ' in 3 s (held 1.5 s)');

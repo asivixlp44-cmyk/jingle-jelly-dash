@@ -1489,6 +1489,13 @@ async function connect(name, endpoint) {
         warpTo(m.x, m.y, m.z);
     });
     room.onMessage('caught', (m) => onCaught(m));
+    room.onMessage('saved', () => {
+        P.downPred = -9;
+        sfx('revive'); rumble(0.6, 200); shake = Math.max(shake, 0.5);
+        bigText('CLOSE CALL! RUN!', '#ffe24a');
+        toast('🛡️ It bounced off you! Next time it catches you.', '#ffe24a');
+        FX.ring(FX.tmpV.set(P.b.x, P.b.y + 0.4, P.b.z), 0xffe24a, 9, 0.45);
+    });
     room.onMessage('revived', (m) => {
         P.down = false; P.downPred = -9; reviveHide();
         teleport(m.x, m.y, m.z, Math.PI);
@@ -1621,10 +1628,19 @@ function onPadOk(m) {
     if (m.k + 1 > best) S.bests = { ...S.bests, [S.world || 0]: m.k + 1 };
     updateHud();
     if (m.first) toast('🏆 First time on this pad: x3!', '#ffe24a');
-    const next = SHOES[(S.shoe || 0) + 1];
-    if (next && S.wins >= next.wins && S.shoe < 2) setTimeout(() => toast('👟 You can afford the ' + next.name + '! The Shoe Shop is right of the Jelly Gate', '#7dff6b'), 900);
+    // new shoes you can buy: one tap, here (the live stats: players had the Wins for the Fuzzy Slippers and never found the shop)
+    const si = S.shoe || 0, next = SHOES[si + 1];
+    if (next && S.wins >= next.wins && !shoeOffered.has(si)) {
+        shoeOffered.add(si);
+        setTimeout(() => {
+            // (only while you're still at the pad: a pop-up stops you, and running on into the next stage there's a Wobbler behind)
+            if (anyPopup() || A || (S.shoe || 0) !== si || S.wins < next.wins || Math.abs(P.b.z - padAt(m.k).z) > W.padR + 8) { shoeOffered.delete(si); return; }
+            askConfirm('👟', 'NEW SHOES!', next.name + ': +' + fmt(next.add) + ' Speed every step you take', 'BUY · ' + fmt(next.wins) + ' 👑', () => net.send('shoe', {}));
+        }, 450);
+    }
     setTimeout(offerDaily, 2500);
 }
+const shoeOffered = new Set();
 // the daily reward pops up only on the ground, between things
 function offerDaily() {
     if (!running || A || !P.b.onGround || anyPopup() || offerDaily.done || P.b.z < W.plaza.z0) return;

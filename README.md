@@ -45,7 +45,7 @@ For development, run `npm run dev:server` and `npm run dev:client`, then open ht
 - **Speed is how fast you run.** Run speed grows with the log of your Speed against the world's scale, from 16 studs a second up to about 75. Every new world starts slow again. **Sugar Rush** adds on top. **PACE** (L, RB, the button) holds you back to 75% or 50% for the tricky bits, but a Wobbler still comes at your full speed.
 - **The Jelly Run.** Fifteen stages in each of four worlds, each stage sized for about five seconds' running at its own pace (140 to 400 studs).
   - **Gates.** A ribbon gate at the start of each stage opens only to enough Speed: 12, 40, 135, 450, 1.5K ... 27M in Jingle Village, then far more in each world after. A shut gate shows its curtain of light and what it wants.
-  - **Every stage is a challenge of its own** (`shared/stages.js`), so no two in a row play alike. Each world runs through them in its own order, harder further in; the stage's name and a one-line tip show as you step in:
+  - **Every stage is a challenge of its own** (`shared/stages.js`), so no two in a row play alike. Each world runs through them in its own order, harder further in (the first four are runs with something to dodge; jumping over syrup, trampolines, jelly walls and the crumbling bridge come from stage 6 on); the stage's name and a one-line tip show as you step in:
     - **Jelly Field**: jelly all over, syrup pools to jump, sugar-rush chevrons. The first stage of every world.
     - **Gumdrop Hop**: the floor is hot syrup; jump from one jelly platform to the next (they squash as you land). Run speed is held to the stage's own pace here, so a hop is a hop however much Speed you have.
     - **Jelly Bouncers**: syrup too wide to jump; land on the giant jelly trampolines and each throws you on to the next.
@@ -63,16 +63,17 @@ For development, run `npm run dev:server` and `npm run dev:client`, then open ht
   - **Against the clock.** The server times every run through a stage, from going in to the Win Pad (a revive doesn't stop the clock), and keeps your best for each: "⏱ 5.8 s · NEW BEST! (was 6.2 s)".
   - **Golden Candies.** Three in every stage (180 in all), off the quick way: on a side platform, at the top of a bounce, at the end of a crumbling branch, in a sweeper's path. Each pays 2 Gems and Speed (5 Gems more for a stage's third), every 9 in a world a Lucky Wheel spin. The stage bar shows how many of the stage's you have, the Worlds card each world's. The server checks you were really there.
 - **The Wobblers.** Step into a stage and its Wobbler plops down at the gate behind you: a Gumdrop Gobbler, a Marmalade Muncher, a Blue Razz Blob or a Grape Glutton. Each world's last stage brings its boss, nearly twice the size: the Gobbler King, the Caramel Colossus, the Frostberry Queen, the Midnight Monarch.
-  - It hops after you at 70% of your top speed in the first stage, up to 92% in the last. **Wobble Ward** slows it.
+  - It hops after you at half your top speed in the first stage, two thirds by the fifth, up to 88% in the last; in the first three stages it waits 2.6 s before it sets off. **Wobble Ward** slows it.
+  - **A close call:** the first time it reaches you each time you go into a stage, it bounces off and comes again from 28 studs back. The second time it catches you.
   - Run flat out and it falls behind; stop, get knocked back or zigzag too much and it catches you.
   - The stage bar at the top says how far behind it is and turns red when it's close.
-  - **Caught:** revive on the spot for 5 Gems (it comes again from well back), or go back to the stage's gate. You get 6 seconds to choose.
+  - **Caught:** revive on the spot for 5 Gems (it comes again from well back), or go back to the stage's gate. You get 4 seconds to choose.
   - Reaching the Win Pad is an **escape**.
 - **Win Pads** at the end of each stage pay Wins: x3 the first time each rebirth, and again every 30 seconds. **TO STAGE** warps you to the furthest stage you've reached that your Speed opens; **TO TREADMILLS** takes you back to your best belt.
 - **Levels and rebirth.** Speed fills the Level bar, and every Level adds to every step, up to the **Level cap** (10, then +3 each rebirth).
   - **Rebirth** (at the cap, for Wins: 60, then x2.4 each time): back to Level 1 and 0 Speed, so the gates close again. In return every step gives x1.5, x2, x2.5... for good, and the cap goes up.
   - You keep your Wins, shoes, pets, upgrades, trails, auras and Gems. Rebirths open belts.
-- **The Shoe Shop.** Sixteen pairs for Wins, from Cozy Socks to Jolly Legend Boots. Each adds Speed to every step and everyone sees them on your feet: their colours, a glowing sole on the better ones, wings on the best.
+- **The Shoe Shop.** Sixteen pairs for Wins (a Win Pad offers the next pair with a BUY button the first time you can afford it), from Cozy Socks to Jolly Legend Boots. Each adds Speed to every step and everyone sees them on your feet: their colours, a glowing sole on the better ones, wings on the best.
 - **Gift Boxes and pets.** Eight Gift Boxes, five pets in each (50 / 30 / 14 / 5 / 1%), forty in all: snow bunnies, gummy bears, reindeer with antlers, penguins, a Jolly Jelly King... each following you round. Open one or three at a time; a finished collection pays Gems. Three on your team at first, up to six (**Pet Igloo**). The best go on your team by themselves until you choose your own.
 - **Upgrades** (Wins, kept when you rebirth): Bouncy Soles, Sugar Rush, Wobble Ward, Jelly Springs (jump higher), Mega Squish (sooner), Lucky Bells (more Wins), Pet Igloo. **8 trails** for Wins and **5 auras** for Gems, both adding Speed to every step.
 - **Four worlds:**

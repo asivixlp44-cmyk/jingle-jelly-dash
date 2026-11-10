@@ -23,7 +23,7 @@ class Bot {
         const c = new Client(URL_);
         this.room = await c.joinOrCreate('run', { uid: 'test_' + this.name, name: this.name, ...(extra || {}) });
         const R = this.room;
-        for (const t of ['hello', 'pong', 'toast', 'broke', 'code', 'boards', 'reward', 'levelup', 'padok', 'warped', 'reborn', 'warp', 'spun', 'bought', 'taskdone', 'questdone', 'hatched', 'caught', 'revived', 'escaped', 'mQueue', 'mStart', 'mGo', 'mScore', 'mDone', 'mOut', 'mTime', 'mEnd', 'mBack', 'mJoined', 'mLeft', 'mSync', 'mNone', 'authed', 'emote', 'chat', 'candy']) R.onMessage(t, (m) => { (this.msgs[t] = this.msgs[t] || []).push(m); });
+        for (const t of ['hello', 'pong', 'toast', 'broke', 'code', 'boards', 'reward', 'levelup', 'padok', 'warped', 'reborn', 'warp', 'spun', 'bought', 'taskdone', 'questdone', 'hatched', 'caught', 'revived', 'escaped', 'mQueue', 'mStart', 'mGo', 'mScore', 'mDone', 'mOut', 'mTime', 'mEnd', 'mBack', 'mJoined', 'mLeft', 'mSync', 'mNone', 'authed', 'emote', 'chat', 'candy', 'saved']) R.onMessage(t, (m) => { (this.msgs[t] = this.msgs[t] || []).push(m); });
         R.onMessage('profile', (m) => { Object.assign(this.p, m); this.profiles = (this.profiles || 0) + 1; });
         R.onMessage('lite', (m) => { Object.assign(this.p, m); });
         R.onMessage('snap', (m) => { this.snaps++; this.x = m.x; this.y = m.y; this.z = m.z; });
@@ -187,9 +187,13 @@ try {
     await c.wait(() => c.me().shK === 0, 2000);
     ok(c.me().shK === 0 && c.me().shV > 0, 'stage 1\'s Wobbler wakes behind you (' + c.me().shV.toFixed(1) + ' studs a second)');
     ok(Math.abs(c.me().shV - runSpeed({}, 0, 0) * shadeRel(0, {})) < 0.01, 'it runs at a share of your top speed');
-    // stand still: it catches you
-    await c.wait(() => c.got('caught'), 6000);
-    ok(c.got('caught') === 1 && c.last('caught').k === 0, 'standing still, it catches you');
+    // stand still: the first time it reaches you it bounces off (a close call) and comes again from well back; then it catches you
+    await c.wait(() => c.got('saved'), 9000);
+    ok(c.got('saved') === 1 && c.got('caught') === 0, 'the first time it reaches you: a close call, not a catch');
+    await sleep(150);
+    ok(c.me().shK === 0 && c.me().shZ > c.z + 20, 'it comes again from well back (' + (c.me().shZ - c.z).toFixed(0) + ' studs)');
+    await c.wait(() => c.got('caught'), 12000);
+    ok(c.got('caught') === 1 && c.last('caught').k === 0, 'standing still, it catches you the second time');
     await sleep(150);
     ok(c.me().shK === 255 && c.me().anim === 4, 'down where you stood, its Wobbler gone');
     const cz = c.z, sn3 = c.snaps;
@@ -215,14 +219,14 @@ try {
     // caught again, then back to the gate
     await c.tp(0, 0, wallZ(0) + 2);
     await c.run(0, wallZ(0) - 8, 20);
-    await c.wait(() => c.got('caught') >= 2, 6000);
+    await c.wait(() => c.got('caught') >= 2, 20000);
     c.send('respawn');
     await c.wait(() => c.got('warped'));
     const wp = c.last('warped'), cp = checkpoint(0);
     ok(wp && wp.why === 'caught' && wp.z === cp.z, 'or back to the stage\'s gate');
     // the revive window runs out by itself
     await c.run(0, wallZ(0) - 14, 20);
-    await c.wait(() => c.got('caught') >= 3, 6000);
+    await c.wait(() => c.got('caught') >= 3, 20000);
     const w0 = c.got('warped');
     await c.wait(() => c.got('warped') > w0, (CFG.reviveSecs + 3) * 1000);
     ok(c.got('warped') > w0, 'no answer: back to the gate after ' + CFG.reviveSecs + ' s');

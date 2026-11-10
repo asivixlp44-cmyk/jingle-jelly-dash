@@ -33,10 +33,10 @@ export const STAGE_TYPES = {
 };
 // each world's fifteen, easy kinds first (the last two are tougher versions of the world's favourites)
 const ORDER = [
-    ['field', 'sliders', 'stones', 'ornaments', 'sweeper', 'bounce', 'boulders', 'walls', 'ice', 'maze', 'gumballs', 'crumble', 'stones', 'sweeper', 'boss'],
-    ['field', 'stones', 'walls', 'sweeper', 'sliders', 'crumble', 'bounce', 'gumballs', 'ornaments', 'boulders', 'maze', 'ice', 'bounce', 'walls', 'boss'],
-    ['field', 'ice', 'sliders', 'bounce', 'boulders', 'stones', 'sweeper', 'crumble', 'gumballs', 'walls', 'ornaments', 'maze', 'ice', 'boulders', 'boss'],
-    ['field', 'bounce', 'gumballs', 'stones', 'sweeper', 'walls', 'crumble', 'sliders', 'boulders', 'ice', 'maze', 'ornaments', 'bounce', 'gumballs', 'boss'],
+    ['field', 'ornaments', 'sliders', 'maze', 'boulders', 'ice', 'sweeper', 'gumballs', 'bounce', 'walls', 'stones', 'crumble', 'sweeper', 'stones', 'boss'],
+    ['field', 'sliders', 'maze', 'ornaments', 'boulders', 'walls', 'sweeper', 'gumballs', 'crumble', 'bounce', 'ice', 'stones', 'bounce', 'walls', 'boss'],
+    ['field', 'ice', 'sliders', 'maze', 'boulders', 'ornaments', 'sweeper', 'gumballs', 'walls', 'crumble', 'bounce', 'stones', 'ice', 'boulders', 'boss'],
+    ['field', 'sliders', 'gumballs', 'maze', 'ornaments', 'boulders', 'sweeper', 'walls', 'crumble', 'ice', 'bounce', 'stones', 'bounce', 'gumballs', 'boss'],
 ];
 export const stageType = (w, k) => (ORDER[(w | 0) % ORDER.length][k] || 'field');
 
@@ -91,7 +91,7 @@ const BUILD = {
         const { r, v, k, hw } = g, n = Math.max(2, Math.min(5, 2 + Math.floor(k / 4))), span = (a - b) / n;
         for (let i = 0; i < n; i++) {
             const z = a - span * (i + 0.5) + (r() - 0.5) * span * 0.25;
-            if (i % 2 === 0) { const d = Math.max(5, Math.min(22, v * 0.3)); out.list.push({ kind: 'pool', z0: z - d / 2, z1: z + d / 2, x0: -hw - 1, x1: hw + 1 }); candy(out, (r() - 0.5) * hw, 4.5, z); }
+            if (i % 2 === 0) { const d = Math.max(5, Math.min(22, v * 0.3)); out.list.push({ kind: 'pool', z0: z - d / 2, z1: z + d / 2, x0: -hw - 1, x1: k === 0 ? 1 : hw + 1 }); candy(out, (r() - 0.5) * hw, 4.5, z); }
             else out.list.push({ kind: 'boost', z, x: (r() - 0.5) * (hw * 2 - 10), hw: 5, hd: 4 });
         }
         candy(out, (r() < 0.5 ? -1 : 1) * (hw - 2), 1.5, a - (a - b) * 0.15);

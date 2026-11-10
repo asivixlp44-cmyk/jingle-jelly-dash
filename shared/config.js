@@ -24,7 +24,7 @@ export const CFG = {
     // DASH: how much faster, how long, how long before the next
     dashK: 1.65, dashSecs: 0.6, dashCool: 2.4,
     // a Wobbler: how long it waits before it comes, how far behind it starts; reviving where it caught you costs Gems
-    shadeDelay: 1.3, shadeBack: 14, reviveGems: 5, reviveSecs: 6,
+    shadeDelay: 1.3, shadeDelayEarly: 2.6, shadeBack: 14, reviveGems: 5, reviveSecs: 4,
     // the server keeps this many bots about when it's quiet (one leaves per player who joins)
     bots: 3,
     boostP2Gems: 25, boostP2Mins: 15, boostW2Gems: 40, boostW2Mins: 10,
@@ -212,7 +212,8 @@ export const runSpeed = (p, speed, w) => Math.min(CFG.vMax, CFG.walk + 3.4 * Mat
 // a step on the ground: a stride, longer the faster you go
 export const strideOf = (v) => Math.max(CFG.stride, v / CFG.strideHz);
 // a stage's Wobbler: as quick as this share of how fast you run when it wakes (Wobble Ward slows it)
-export const shadeRel = (k, p) => Math.min(0.92, 0.7 + 0.016 * k) * (1 - 0.02 * upLevel(p, 'ward'));
+// (the first stages slow: half your speed in the first, two thirds by the fifth, then up to 0.88 in the last)
+export const shadeRel = (k, p) => Math.min(0.92, k < 4 ? 0.5 + 0.045 * k : 0.68 + 0.02 * (k - 4)) * (1 - 0.02 * upLevel(p, 'ward'));
 // how fast the stage is meant to be run (its layout is sized for this): someone with just enough Speed for it
 export const stageV = (k) => CFG.walk + 3.4 * Math.log(1 + NEED[Math.max(0, Math.min(WALLS_N - 1, k))] / 4);
 
